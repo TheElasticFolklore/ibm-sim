@@ -7,8 +7,7 @@ WARN_AT_PERCENT = 80
 
 
 def wear_percent(km_since_service, interval):
-    ratio = km_since_service // interval   # service intervals used up
-    return ratio * 100
+    return km_since_service / interval * 100
 
 
 def needs_service(car):
