@@ -6,44 +6,35 @@
 MILES_PER_KM = 0.621371                 # 1 mile = 1.609344 km, so this factor goes km -> miles
 
 
-def km_to_miles(km):
-    # Used by the nightly run for the UK partner report, which reports in miles.
+def km_to_miles(km: float) -> float:
+    """Convert kilometres to miles. Used by the nightly run for the UK partner report."""
     return km * MILES_PER_KM
 
 
-def format_number(value):
-    return "%.1f" % value
+def format_number(value: float) -> str:
+    """Format a number to one decimal place."""
+    return f"{value:.1f}"
 
 
-def format_percent(value):
-    return "%d%%" % value
+def format_percent(value: int) -> str:
+    """Format an integer percentage, e.g. 80 -> '80%'."""
+    return f"{value}%"
 
 
-def mean(values):
-    # Es gibt statistics.mean seit Python 3.4. Das hier ist aelter.
-    # (statistics.mean has existed since Python 3.4. This is older.)
-    total = 0
-    count = 0
-    for v in values:
-        total = total + v
-        count = count + 1
-    if count == 0:
-        return 0
-    return total / count
+def mean(values: list[float]) -> float:
+    """Return the arithmetic mean of values, or 0.0 if there are none."""
+    if not values:
+        return 0.0
+    return sum(values) / len(values)
 
 
-def is_due(pct, threshold):
-    # Duplikat der Logik in km_wachter.needs_service. Welche Version stimmt? Beide? Keine?
-    # (A duplicate of km_wachter.needs_service. Which version is right? Both? Neither?)
-    if pct >= threshold:
-        return True
-    else:
-        return False
+def is_due(pct: float, threshold: float) -> bool:
+    """Return True if wear percentage has reached the threshold."""
+    return pct >= threshold
 
 
-def parse_service_date(text):
-    # Wurde fuer das alte Werkstatt-Formular gebraucht (2014). Das Formular gibt es nicht mehr.
-    # (Was needed for the old garage form, 2014. The form no longer exists.)
+def parse_service_date(text: str) -> tuple[int, int, int] | None:
+    """Parse a DD.MM.YYYY date into (year, month, day), or None if it is malformed."""
     parts = text.split(".")
     if len(parts) != 3:
         return None
@@ -53,9 +44,8 @@ def parse_service_date(text):
     return (year, month, day)
 
 
-def chunk_list(items, size):
-    # Von Stack Overflow kopiert (2013). Wird nirgends mehr aufgerufen.
-    # (Copied from Stack Overflow in 2013. No longer called from anywhere.)
+def chunk_list(items: list, size: int) -> list[list]:
+    """Split items into consecutive chunks of the given size."""
     chunks = []
     current = []
     for item in items:
@@ -63,6 +53,6 @@ def chunk_list(items, size):
         if len(current) == size:
             chunks.append(current)
             current = []
-    if len(current) > 0:
+    if current:
         chunks.append(current)
     return chunks

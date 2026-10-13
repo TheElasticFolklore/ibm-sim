@@ -8,32 +8,37 @@ from log_util import log, flush_log
 import fleet_utils
 
 
-def car_wear(car):
-    # None, not zero: an unreadable car is not a freshly-serviced car.
+def car_wear(car: dict) -> float | None:
+    """Return the car's wear as a percentage, or None if it has no service reading."""
     if "last_service_km" not in car:
         return None
     return wear_percent(car["odometer"] - car["last_service_km"], SERVICE_INTERVAL_KM)
 
 
-def fleet_summary(fleet):
-    # Unreadable cars are left out of the average, not counted as 0% worn.
+def fleet_summary(fleet: list[dict]) -> dict:
+    """Return fleet size, how many cars are due, and average wear across the fleet.
+
+    Cars with no service reading are left out of the average rather than counted
+    as 0% worn, which would make the fleet look healthier than it really is.
+    """
     wears = [w for w in (car_wear(car) for car in fleet) if w is not None]
     due = sum(1 for car in fleet if needs_service(car))
     average = sum(wears) / len(wears) if wears else 0
     return {"count": len(fleet), "due": due, "average_wear": average}
 
 
-def print_report(fleet):
+def print_report(fleet: list[dict]) -> None:
+    """Print the nightly fleet-health summary and flush the log."""
     settings = load_settings()
     log(get_setting(settings, "report_title", "Nightly fleet report"))
     s = fleet_summary(fleet)
-    print("Fleet: %d cars" % s["count"])
-    print("Due for service: %d" % s["due"])
-    print("Average wear: %.1f%%" % s["average_wear"])
+    print(f"Fleet: {s['count']} cars")
+    print(f"Due for service: {s['due']}")
+    print(f"Average wear: {s['average_wear']:.1f}%")
     total_km = 0
     for car in fleet:
         total_km = total_km + car["odometer"]
-    # Die Partnerwerkstatt in England will die Distanz in Meilen (seit 2015).
-    # (The partner garage in England wants the distance in miles, since 2015.)
-    print("Fleet distance: %s miles" % fleet_utils.format_number(fleet_utils.km_to_miles(total_km)))
+    # The partner garage in England reports in miles (since 2015).
+    distance_miles = fleet_utils.km_to_miles(total_km)
+    print(f"Fleet distance: {fleet_utils.format_number(distance_miles)} miles")
     flush_log(get_setting(settings, "log_file", "km_wachter.log"))
