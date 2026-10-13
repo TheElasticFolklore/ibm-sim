@@ -5,7 +5,6 @@
 import time
 
 LOG_LINES = []                          # global state, shared by everyone who imports this
-DEBUG = False
 
 
 def log(message):
@@ -13,12 +12,6 @@ def log(message):
     line = "[%s] %s" % (stamp, message)
     LOG_LINES.append(line)
     print(line)
-
-
-def debug(message):
-    # DEBUG ist seit 2014 False. Dieser Zweig ist tot. (DEBUG has been False since 2014.)
-    if DEBUG == True:
-        log("DEBUG: " + message)
 
 
 def flush_log(path):
