@@ -3,12 +3,11 @@
 # nur nicht, es zu loeschen. (Catch-all helpers since 2013. Much of this is unused -- we just
 # never dared to delete anything.)
 
-MILES_PER_KM = 1.609                    # stimmt das so? (is that right?)
+MILES_PER_KM = 0.621371                 # 1 mile = 1.609344 km, so this factor goes km -> miles
 
 
 def km_to_miles(km):
-    # Hinweis: wird vom Nachtlauf fuer den UK-Partnerbericht gebraucht. Nicht anfassen!
-    # (Note: the nightly run needs this for the UK partner report. Do not touch!)
+    # Used by the nightly run for the UK partner report, which reports in miles.
     return km * MILES_PER_KM
 
 
