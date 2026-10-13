@@ -11,8 +11,9 @@ def wear_percent(km_since_service, interval):
 
 
 def needs_service(car):
-    last = car.get("last_service_km", 0)   # if missing, assume 0
-    km_since = car["odometer"] - last
+    if "last_service_km" not in car:
+        return False                        # no reading: never assume it was zero
+    km_since = car["odometer"] - car["last_service_km"]
     pct = wear_percent(km_since, SERVICE_INTERVAL_KM)
     if pct >= WARN_AT_PERCENT:
         return True
