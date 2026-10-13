@@ -9,18 +9,17 @@ import fleet_utils
 
 
 def car_wear(car):
-    last = car["last_service_km"]                 # crashes if a car has no reading
-    return wear_percent(car["odometer"] - last, SERVICE_INTERVAL_KM)
+    # None, not zero: an unreadable car is not a freshly-serviced car.
+    if "last_service_km" not in car:
+        return None
+    return wear_percent(car["odometer"] - car["last_service_km"], SERVICE_INTERVAL_KM)
 
 
 def fleet_summary(fleet):
-    total = 0
-    due = 0
-    for car in fleet:
-        total = total + car_wear(car)
-        if needs_service(car) == True:
-            due = due + 1
-    average = total // len(fleet)                 # whole-number division loses the average
+    # Unreadable cars are left out of the average, not counted as 0% worn.
+    wears = [w for w in (car_wear(car) for car in fleet) if w is not None]
+    due = sum(1 for car in fleet if needs_service(car))
+    average = sum(wears) / len(wears) if wears else 0
     return {"count": len(fleet), "due": due, "average_wear": average}
 
 
@@ -30,7 +29,7 @@ def print_report(fleet):
     s = fleet_summary(fleet)
     print("Fleet: %d cars" % s["count"])
     print("Due for service: %d" % s["due"])
-    print("Average wear: %d%%" % s["average_wear"])
+    print("Average wear: %.1f%%" % s["average_wear"])
     total_km = 0
     for car in fleet:
         total_km = total_km + car["odometer"]
