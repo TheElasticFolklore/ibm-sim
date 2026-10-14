@@ -17,34 +17,33 @@ KNOWN_KEYS = [
 def load_settings(path: str | None = None) -> dict:
     """Parse the settings file into a dict of strings.
 
-    Deliberately forgiving: blank lines, comments, lines with no "=", and unknown keys are
-    all skipped rather than reported, so a typo in the cfg never surfaces.
+    Deliberately forgiving: blank lines, comments, lines with no "=", and unknown keys
+    are all skipped rather than reported. A typo in the cfg therefore never surfaces.
     """
-    if path == None:
+    if path is None:
         path = SETTINGS_FILE
     settings = {}
-    f = open(path)
-    for line in f.readlines():
-        line = line.strip()
-        if line == "":
-            continue
-        if line.startswith("#"):
-            continue
-        if "=" not in line:
-            continue                    # kaputte Zeile? Einfach weiter. (Broken line? Just carry on.)
-        parts = line.split("=")
-        key = parts[0].strip()
-        value = parts[1].strip()
-        # Unbekannte Schluessel werden stillschweigend ignoriert. Ein Tippfehler im cfg
-        # faellt also NIE auf. (Unknown keys are silently dropped, so a typo never surfaces.)
-        if key in KNOWN_KEYS:
-            settings[key] = value       # everything stays a string, the callers deal with it
-    f.close()
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if line == "":
+                continue
+            if line.startswith("#"):
+                continue
+            if "=" not in line:
+                continue                    # kaputte Zeile? Einfach weiter. (Broken line? Just carry on.)
+            parts = line.split("=")
+            key = parts[0].strip()
+            value = parts[1].strip()
+            # Unbekannte Schluessel werden stillschweigend ignoriert. Ein Tippfehler im cfg
+            # faellt also NIE auf. (Unknown keys are silently dropped, so a typo never surfaces.)
+            if key in KNOWN_KEYS:
+                settings[key] = value       # everything stays a string, the callers deal with it
     return settings
 
 
 def get_int(settings: dict, key: str, fallback: int) -> int:
-    """Return settings[key] as an int, or fallback if it is missing or not an integer."""
+    """Return settings[key] as an int, or fallback if missing or not an integer."""
     if key in settings:
         try:
             return int(settings[key])
@@ -55,6 +54,4 @@ def get_int(settings: dict, key: str, fallback: int) -> int:
 
 def get_setting(settings: dict, key: str, fallback: str = "") -> str:
     """Return settings[key], or fallback if the key is absent."""
-    if key in settings:
-        return settings[key]
-    return fallback
+    return settings.get(key, fallback)

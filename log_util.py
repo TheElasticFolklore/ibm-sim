@@ -10,15 +10,14 @@ LOG_LINES = []                          # global state, shared by everyone who i
 def log(message: str) -> None:
     """Append a timestamped line to the buffer and echo it to stdout."""
     stamp = time.strftime("%Y-%m-%d %H:%M:%S")
-    line = "[%s] %s" % (stamp, message)
+    line = f"[{stamp}] {message}"
     LOG_LINES.append(line)
     print(line)
 
 
 def flush_log(path: str) -> None:
     """Append the buffered lines to path, then empty the buffer."""
-    f = open(path, "a")
-    for line in LOG_LINES:
-        f.write(line + "\n")
-    f.close()
-    del LOG_LINES[:]                    # so leert man 2013 eine Liste (2013's way to clear a list)
+    with open(path, "a") as f:
+        for line in LOG_LINES:
+            f.write(line + "\n")
+    LOG_LINES.clear()
