@@ -14,7 +14,12 @@ KNOWN_KEYS = [
 ]
 
 
-def load_settings(path=None):
+def load_settings(path: str | None = None) -> dict:
+    """Parse the settings file into a dict of strings.
+
+    Deliberately forgiving: blank lines, comments, lines with no "=", and unknown keys are
+    all skipped rather than reported, so a typo in the cfg never surfaces.
+    """
     if path == None:
         path = SETTINGS_FILE
     settings = {}
@@ -38,7 +43,8 @@ def load_settings(path=None):
     return settings
 
 
-def get_int(settings, key, fallback):
+def get_int(settings: dict, key: str, fallback: int) -> int:
+    """Return settings[key] as an int, or fallback if it is missing or not an integer."""
     if key in settings:
         try:
             return int(settings[key])
@@ -47,8 +53,8 @@ def get_int(settings, key, fallback):
     return fallback
 
 
-def get_setting(settings, key, fallback=""):
-    # Duplikat von dict.get -- war schon 2013 ueberfluessig. (A duplicate of dict.get.)
+def get_setting(settings: dict, key: str, fallback: str = "") -> str:
+    """Return settings[key], or fallback if the key is absent."""
     if key in settings:
         return settings[key]
     return fallback

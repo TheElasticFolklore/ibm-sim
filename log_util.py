@@ -7,14 +7,16 @@ import time
 LOG_LINES = []                          # global state, shared by everyone who imports this
 
 
-def log(message):
+def log(message: str) -> None:
+    """Append a timestamped line to the buffer and echo it to stdout."""
     stamp = time.strftime("%Y-%m-%d %H:%M:%S")
     line = "[%s] %s" % (stamp, message)
     LOG_LINES.append(line)
     print(line)
 
 
-def flush_log(path):
+def flush_log(path: str) -> None:
+    """Append the buffered lines to path, then empty the buffer."""
     f = open(path, "a")
     for line in LOG_LINES:
         f.write(line + "\n")
