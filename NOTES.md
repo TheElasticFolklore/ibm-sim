@@ -1,12 +1,18 @@
 # What I checked, and what the agent got wrong
 
-Write this yourself, in your own words. It is the part of the repo that proves the work is yours.
-
 ## What the agent got wrong
-(Every agent gets something wrong on a job this size. What did you catch? How did you notice?)
+
+- Agent did a good job fixing the bugs, and improving overall architecture of the code.
+- However, when I asked it to remove dead code, it removed everything that was not used.
+- Then, I told it to check whether the functions are actually dead or not used (left).
 
 ## What I checked before I accepted its work
-(How do you KNOW the wear bug is fixed and the 80% rule is untouched? What did you run?)
+
+- I review the code manually to check if logic is correct.
+- `config_loader` is imported to use hardcoded 80% value.
+- I ran `python verify.py` to confirm it.
 
 ## What the data actually said
-(Which factors predict a breakdown, and which obvious-looking one turned out not to?)
+
+- **Service due** and **load coefficient** were the main predictor.
+- **Service due** or **load coefficient** alone does not predict reliablely.
